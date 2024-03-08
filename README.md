@@ -119,19 +119,91 @@ Aşağıda istenilen sonuçlara ulaşabilmek için gerekli SQL sorgularını yaz
 	
 	
 	16) Öğrenci tablosunu kontrol etmek amaçlı tüm öğrencileri görüntüleyen "ogrencilistesi" adında bir prosedür oluşturun.
-	
-	
+    
+    //Aşağıdaki koddan emin değilim. Tekrar kontrol edilecek. Çünkü CALL "kütüphane".ogrencilistesi() ya da CALL ogrencilistesi() dediğimde çalışmıyor. 
+
+    CREATE OR REPLACE PROCEDURE "kütüphane".ogrencilistesi()
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+    SELECT *
+    FROM "kütüphane".ogrenci;
+    END;	 
+    $$;
+
+
 	17) Öğrenci tablosuna yeni öğrenci eklemek için "ekle" adında bir prosedür oluşturun.
 	
+    CREATE OR REPLACE PROCEDURE ekle(
+      IN yeni_ad VARCHAR(50),
+      IN yeni_soyad VARCHAR(50),
+      IN yeni_numara INTEGER
+    )
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+        INSERT INTO "kütüphane".ogrenci (ad, soyad, numara) VALUES (yeni_ad,
+    yeni_soyad, yeni_numara);
+        COMMIT;
+    END;
+    $$;
 	
 	18) Öğrenci noya göre öğrenci silebilmeyi sağlayan "sil" adında bir prosedür oluşturun.
 	
+    CREATE OR REPLACE PROCEDURE "kütüphane".ekle(	  
+      IN yeni_ad VARCHAR(255),
+      IN yeni_soyad VARCHAR(255),
+	  IN yeni_dtarih VARCHAR(255),
+	  IN yeni_cinsiyet VARCHAR(255),
+	  IN yeni_sinif VARCHAR(5),
+	  IN yeni_puan INTEGER
+      
+    )
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+        INSERT INTO "kütüphane".ogrenci (ad, soyad, dtarih, cinsiyet, sınıf, puan) VALUES (yeni_ad,
+    yeni_soyad, yeni_dtarih, yeni_cinsiyet, yeni_sinif, yeni_puan);
+        COMMIT;
+    END;
+    $$;
+
+    CALL "kütüphane".ekle('John','Doe','01-01-1990', 'Erkek', '11C', 78)
 	
 	19) Öğrenci numarasını kullanarak kolay bir biçimde öğrencinin sınıfını değiştirebileceğimiz bir prosedür oluşturun.
+
+    CREATE OR REPLACE PROCEDURE "kütüphane".sinif_degistir(
+    IN yeni_ogrno INTEGER,
+    IN yeni_sinif VARCHAR(5)
+    )
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+    UPDATE "kütüphane".ogrenci
+    SET sinif = yeni_sinif
+    WHERE ogrno = yeni_ogrno;
+    COMMIT;
+    END;
+    $$;
+
+    CALL "kütüphane".sinif_degistir(13,'11D');
 	
 	
 	20) Öğrenci adı ve soyadını "Ad Soyad" olarak birleştirip, ad soyada göre kolayca arama yapmayı sağlayan bir prosedür yazın.
-	
+    
+    Aşağıdaki prosedürü oluşturup çağırdığımda sadece success mesajı alıyorum. Bana öğrenciyi dönmüyor. Tekrar kontrol edilecek. 	
+ 
+    CREATE OR REPLACE PROCEDURE "kütüphane".ogrenci_ara(
+    IN aranan_ad_soyad VARCHAR(255)
+    )
+    LANGUAGE plpgsql
+    AS $$
+    BEGIN
+    SELECT *
+    FROM "kütüphane".ogrenci
+    WHERE CONCAT(ad, ' ', soyad) = aranan_ad_soyad;
+    END;
+    $$;
 	
 	21) Daha önceden oluşturduğunu tüm prosedürleri silin.
 	
